@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineFind - Edit Profile</title>
+    <link rel="icon" type="image/png" href="cinefind.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header h1 {
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #666;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar .change-avatar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-avatar:hover .change-avatar {
+            opacity: 1;
+        }
+
+        .profile-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            padding: 0.8rem;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .stat-card h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #e50914;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #f40612;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+        }
+
+        .password-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+        }
+
+        .password-section h2 {
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="index.html">
+                <img src="cinefind.png" alt="CineFind Logo" class="logo" style="width: 100px; height: 100px;">
+            </a>
+        </div>
+        <div class="navbar-nav" style="margin: auto;">
+            <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="nav-link"><i class="fas fa-list"></i> My List</a>
+            <a href="#" class="nav-link"><i class="fas fa-fire"></i> New & Popular</a>
+            <a href="#" class="nav-link" onclick="openAboutModal()"><i class="fas fa-info-circle"></i> About</a>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Edit Profile</h1>
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+                <div class="change-avatar">
+                    <i class="fas fa-camera"></i> Change Photo
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-success" id="successAlert">
+            Profile updated successfully!
+        </div>
+        <div class="alert alert-error" id="errorAlert">
+            Error updating profile. Please try again.
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-card">
+                <h3 id="watchlistCount">0</h3>
+                <p>Movies in Watchlist</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="reviewCount">0</h3>
+                <p>Reviews Written</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="ratingCount">0</h3>
+                <p>Movies Rated</p>
+            </div>
+        </div>
+
+        <form class="profile-form" id="profileForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required readonly>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="password-section">
+                <h2>Change Password</h2>
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword">
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load user data into form
+            document.getElementById('name').value = currentUser.name || '';
+            document.getElementById('email').value = currentUser.email || '';
+            document.getElementById('username').value = currentUser.username || '';
+
+            // Load user stats
+            loadUserStats(currentUser.email);
+        });
+
+        // Load user statistics
+        async function loadUserStats(email) {
+            try {
+                const watchlist = JSON.parse(localStorage.getItem(`watchlist_${email}`)) || [];
+                const reviews = JSON.parse(localStorage.getItem(`reviews_${email}`)) || [];
+                const ratings = JSON.parse(localStorage.getItem(`ratings_${email}`)) || [];
+
+                document.getElementById('watchlistCount').textContent = watchlist.length;
+                document.getElementById('reviewCount').textContent = reviews.length;
+                document.getElementById('ratingCount').textContent = ratings.length;
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+
+            // Validate passwords if changing
+            if (newPassword || confirmPassword || currentPassword) {
+                if (newPassword !== confirmPassword) {
+                    showAlert('error', 'New passwords do not match!');
+                    return;
+                }
+                if (!currentPassword) {
+                    showAlert('error', 'Please enter your current password!');
+                    return;
+                }
+                // Here you would typically verify the current password
+            }
+
+            // Update user data
+            const updatedUser = {
+                ...currentUser,
+                name: document.getElementById('name').value,
+                username: document.getElementById('username').value
+            };
+
+            // Update localStorage
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+            // Update registered users
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+            const userIndex = registeredUsers.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) {
+                registeredUsers[userIndex] = {
+                    ...registeredUsers[userIndex],
+                    name: updatedUser.name,
+                    username: updatedUser.username
+                };
+                localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            }
+
+            showAlert('success', 'Profile updated successfully!');
+        });
+
+        // Show alert message
+        function showAlert(type, message) {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            if (type === 'success') {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+                errorAlert.style.display = 'none';
+            } else {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+                successAlert.style.display = 'none';
+            }
+
+            // Hide alert after 3 seconds
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+                errorAlert.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle avatar change
+        document.querySelector('.change-avatar').addEventListener('click', function() {
+            // Implement avatar upload functionality
+            alert('Avatar upload functionality to be implemented');
+        });
+    </script>
+</body>
+</html> 
